@@ -1,0 +1,47 @@
+import { create } from "zustand";
+import type { Rune, RuneFormatted } from "../types/rune";
+import { getRuneEfficiency } from "../lib/rune.utils";
+
+type StoreType = {
+  runes: RuneFormatted[];
+  addRunes: (runes: Rune[]) => void;
+  removeRunes: (runesIds: number[]) => void;
+  setOccupiedNameToRunes: (runes: Rune[], name: string) => void;
+};
+
+export const useRunesStore = create<StoreType>((set) => ({
+  runes: [],
+  addRunes: (runes) =>
+    set((state) => ({
+      runes: [
+        ...state.runes,
+        ...runes.map((rune) => ({
+          ...rune,
+          efficiency: getRuneEfficiency(rune),
+          all_sec_eff: rune.sec_eff.reduce(
+            (acc, [id, value]) => {
+              acc[id] = value;
+              return acc;
+            },
+            {} as Record<number, number>,
+          ),
+        })),
+      ],
+    })),
+  removeRunes: (runesIds) =>
+    set((state) => ({
+      runes: state.runes.filter((rune) => !runesIds.includes(rune.rune_id)),
+    })),
+  setOccupiedNameToRunes: (runes, name) =>
+    set((state) => ({
+      runes: state.runes.map((rune) => {
+        if (runes.some((r) => r.rune_id === rune.rune_id)) {
+          return {
+            ...rune,
+            occupied_name: name,
+          };
+        }
+        return rune;
+      }),
+    })),
+}));
