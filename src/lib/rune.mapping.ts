@@ -26,6 +26,12 @@ export const SETS = {
 };
 export type SetId = keyof typeof SETS;
 
+export const getSetNameById = (id: SetId) => SETS[id];
+export const getSetIdByName = (name: string): SetId =>
+  parseInt(
+    Object.keys(SETS).find((id) => SETS[id as unknown as SetId] === name) ?? "",
+  ) as SetId;
+
 export const EFFECTS = {
   1: "HP flat",
   2: "HP %",
@@ -50,18 +56,27 @@ export const RANKS = {
 };
 export type RankId = keyof typeof RANKS;
 
-export const QUALITIES = {
+export const QUALITIES_CLASSIC = {
   1: "Common",
   2: "Magic",
   3: "Rare",
   4: "Hero",
   5: "Legend",
-  // ancient rune qualities
+};
+export type QualityClassicId = keyof typeof QUALITIES_CLASSIC;
+
+export const QUALITIES_ANCIENT = {
   11: "Common",
   12: "Magic",
   13: "Rare",
   14: "Hero",
   15: "Legend",
+};
+export type QualityAncientId = keyof typeof QUALITIES_ANCIENT;
+
+export const QUALITIES = {
+  ...QUALITIES_CLASSIC,
+  ...QUALITIES_ANCIENT,
 };
 export type QualityId = keyof typeof QUALITIES;
 

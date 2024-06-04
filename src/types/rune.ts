@@ -1,11 +1,13 @@
 import type { EffectId, QualityId, SetId } from "../lib/rune.mapping";
 
+export type SlotId = 1 | 2 | 3 | 4 | 5 | 6;
+
 export type Rune = {
   rune_id: number;
   wizard_id: number;
   occupied_type: 1 | 2; // 1 = Monster, 2 = Inventory
   occupied_id: number;
-  slot_no: 1 | 2 | 3 | 4 | 5 | 6;
+  slot_no: SlotId;
   rank: QualityId;
   class: 1 | 2 | 3 | 4 | 5 | 6;
   set_id: SetId;

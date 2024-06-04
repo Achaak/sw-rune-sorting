@@ -1,9 +1,5 @@
-import { RuneList } from "./_components/rune-list";
+"use client";
 
 export default function HomePage() {
-  return (
-    <main className="p-4">
-      <RuneList />
-    </main>
-  );
+  return <main className="p-4"></main>;
 }

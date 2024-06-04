@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FC } from "react";
+import { useMemo, useState, type FC } from "react";
 import { useRunesStore } from "../../store/runes";
 import {
   type ColumnDef,
@@ -30,43 +30,34 @@ import {
   type EffectId,
 } from "../../lib/rune.mapping";
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { useMobsStore } from "../../store/mobs";
-import { type Mob } from "../../types/mob";
+import { useFiltersStore } from "../../store/filters";
 
 export type RuneTable = {
   set: string;
 };
 
 export const RuneList: FC = () => {
-  const { addRunes, runes } = useRunesStore();
-  const { addMobs } = useMobsStore();
+  const { runes } = useRunesStore();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const { filters } = useFiltersStore();
 
-  const handleAddData = (files: FileList | null) => {
-    if (!files?.length) {
-      return;
-    }
-
-    const file = files[0];
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const content = e.target?.result;
-      if (typeof content === "string") {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const data = JSON.parse(content);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        addRunes(data.runes as unknown as Rune[]);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        addMobs(data.unit_list as unknown as Mob[]);
+  const dataFiltered = useMemo(() => {
+    return runes.filter((rune) => {
+      if (filters.sets.length) {
+        if (!filters.sets.includes(rune.set_id)) {
+          return false;
+        }
       }
-    };
 
-    if (!file) {
-      return;
-    }
-    reader.readAsText(file);
-  };
+      if (filters.slots.length) {
+        if (!filters.slots.includes(rune.slot_no)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [filters.sets, filters.slots, runes]);
 
   const columns: ColumnDef<Rune>[] = [
     {
@@ -374,7 +365,7 @@ export const RuneList: FC = () => {
   ];
 
   const table = useReactTable({
-    data: runes,
+    data: dataFiltered,
     columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -387,11 +378,6 @@ export const RuneList: FC = () => {
 
   return (
     <div className="w-full">
-      <input
-        type="file"
-        onChange={(e) => handleAddData(e.target.files)}
-        accept=".json"
-      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -399,7 +385,11 @@ export const RuneList: FC = () => {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className="whitespace-nowrap text-center"
+                      colSpan={header.colSpan}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -420,7 +410,10 @@ export const RuneList: FC = () => {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className="whitespace-nowrap text-center"
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -432,7 +425,7 @@ export const RuneList: FC = () => {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getAllFlatColumns().length}
                   className="h-24 text-center"
                 >
                   No results.
