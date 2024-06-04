@@ -4,8 +4,10 @@ import { useRef, type FC } from "react";
 import { Button } from "../../components/ui/button";
 import { useMobsStore } from "../../store/mobs";
 import { useRunesStore } from "../../store/runes";
-import { type Mob } from "../../types/mob";
-import { type Rune } from "../../types/rune";
+import { z } from "zod";
+import { toast } from "../../components/ui/use-toast";
+import { mobSchema, type Mob } from "../../lib/mob.mapping";
+import { runeSchema, type Rune } from "../../lib/rune.mapping";
 
 export const Header: FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -25,6 +27,22 @@ export const Header: FC = () => {
       if (typeof content === "string") {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const data = JSON.parse(content);
+
+        if (
+          !z
+            .object({
+              runes: z.array(runeSchema),
+              unit_list: z.array(mobSchema),
+            })
+            .safeParse(data).success
+        ) {
+          toast({
+            title: "Invalid data",
+            description: "The data you are trying to import is not valid.",
+            variant: "destructive",
+          });
+          return;
+        }
 
         resetRunes();
         resetMobs();

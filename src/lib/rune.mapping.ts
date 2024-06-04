@@ -1,3 +1,48 @@
+import { z } from "zod";
+
+export const runeSchema = z.object({
+  rune_id: z.number(),
+  wizard_id: z.number(),
+  occupied_type: z.number().refine((x) => x === 1 || x === 2), // 1 = Monster, 2 = Inventory
+  occupied_id: z.number(),
+  slot_no: z.number().refine((x) => x >= 1 && x <= 6),
+  rank: z.number(),
+  class: z.number(),
+  set_id: z.number(),
+  upgrade_limit: z.number(),
+  upgrade_curr: z.number(),
+  base_value: z.number(),
+  sell_value: z.number(),
+  pri_eff: z.tuple([z.number(), z.number()]), // [id, value]
+  prefix_eff: z.tuple([z.number(), z.number()]), // [id, value]
+  sec_eff: z.array(
+    z.tuple([z.number(), z.number(), z.number(), z.number()]), // [id, value, enchanted (0 = false, 1 = true), grind (0 = false, other = grind value)]
+  ),
+});
+export type Rune = z.infer<typeof runeSchema>;
+
+export const runeFormattedSchema = runeSchema.extend({
+  efficiency: z.object({
+    current: z.string(),
+    max: z.string(),
+  }),
+  all_sec_eff: z.object({
+    1: z.number().optional(),
+    2: z.number().optional(),
+    3: z.number().optional(),
+    4: z.number().optional(),
+    5: z.number().optional(),
+    6: z.number().optional(),
+    8: z.number().optional(),
+    9: z.number().optional(),
+    10: z.number().optional(),
+    11: z.number().optional(),
+    12: z.number().optional(),
+  }),
+  occupied_name: z.string().optional(),
+});
+export type RuneFormatted = z.infer<typeof runeFormattedSchema>;
+
 export const SETS = {
   1: "Energy",
   2: "Guard",
@@ -26,11 +71,11 @@ export const SETS = {
 };
 export type SetId = keyof typeof SETS;
 
-export const getSetNameById = (id: SetId) => SETS[id];
-export const getSetIdByName = (name: string): SetId =>
+export const getSetNameById = (id: number) => SETS[id as unknown as SetId];
+export const getSetIdByName = (name: string) =>
   parseInt(
     Object.keys(SETS).find((id) => SETS[id as unknown as SetId] === name) ?? "",
-  ) as SetId;
+  );
 
 export const EFFECTS = {
   1: "HP flat",
@@ -44,7 +89,7 @@ export const EFFECTS = {
   10: "CRIT Dmg",
   11: "Resistance",
   12: "Accuracy",
-};
+} as const;
 export type EffectId = keyof typeof EFFECTS;
 
 export const RANKS = {
@@ -53,7 +98,7 @@ export const RANKS = {
   2: "Rare",
   3: "Hero",
   4: "Legendary",
-};
+} as const;
 export type RankId = keyof typeof RANKS;
 
 export const QUALITIES_CLASSIC = {
@@ -62,7 +107,7 @@ export const QUALITIES_CLASSIC = {
   3: "Rare",
   4: "Hero",
   5: "Legend",
-};
+} as const;
 export type QualityClassicId = keyof typeof QUALITIES_CLASSIC;
 
 export const QUALITIES_ANCIENT = {
@@ -71,13 +116,13 @@ export const QUALITIES_ANCIENT = {
   13: "Rare",
   14: "Hero",
   15: "Legend",
-};
+} as const;
 export type QualityAncientId = keyof typeof QUALITIES_ANCIENT;
 
 export const QUALITIES = {
   ...QUALITIES_CLASSIC,
   ...QUALITIES_ANCIENT,
-};
+} as const;
 export type QualityId = keyof typeof QUALITIES;
 
 export const MAX_OF_MAINSTAT = {
@@ -180,7 +225,7 @@ export const MAX_OF_MAINSTAT = {
     5: 51,
     6: 64,
   },
-};
+} as const;
 
 export const MAX_OF_SUBSTAT = {
   1: {
@@ -282,4 +327,4 @@ export const MAX_OF_SUBSTAT = {
     5: 35,
     6: 40,
   },
-};
+} as const;

@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { type Mob } from "../types/mob";
+import { type Mob } from "../lib/mob.mapping";
 import { useRunesStore } from "./runes";
-import { MOB_ID } from "../lib/mob.mapping";
+import { MOB_ID, type MobId } from "../lib/mob.mapping";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 type StoreType = {
@@ -27,7 +27,10 @@ export const useMobsStore = create(
 
         for (const mob of mobs.filter((mob) => mob.runes.length > 0)) {
           addRunes(mob.runes);
-          setOccupiedNameToRunes(mob.runes, MOB_ID[mob.unit_master_id]);
+          setOccupiedNameToRunes(
+            mob.runes,
+            MOB_ID[mob.unit_master_id as MobId],
+          );
         }
       },
       removeMobs: (mobsIds) =>

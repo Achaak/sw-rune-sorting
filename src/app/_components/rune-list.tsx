@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   type SortingState,
 } from "@tanstack/react-table";
-import { type Rune } from "../../types/rune";
+import { type Rune } from "../../lib/rune.mapping";
 import {
   Table,
   TableHeader,

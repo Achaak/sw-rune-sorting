@@ -1,3 +1,43 @@
+import { z } from "zod";
+import { runeSchema } from "./rune.mapping";
+
+export const mobSchema = z.object({
+  unit_id: z.number(),
+  wizard_id: z.number(),
+  island_id: z.number(),
+  pos_x: z.number(),
+  pos_y: z.number(),
+  building_id: z.number(),
+  unit_master_id: z.number(),
+  unit_level: z.number(),
+  class: z.number(),
+  con: z.number(),
+  atk: z.number(),
+  def: z.number(),
+  spd: z.number(),
+  resist: z.number(),
+  accuracy: z.number(),
+  critical_rate: z.number(),
+  critical_damage: z.number(),
+  experience: z.number(),
+  exp_gained: z.number(),
+  exp_gain_rate: z.number(),
+  skills: z.array(z.tuple([z.number(), z.number()])),
+  runes: z.array(runeSchema),
+  artifacts: z.unknown(),
+  costume_master_id: z.number(),
+  trans_items: z.unknown(),
+  attribute: z.number(),
+  create_time: z.string(),
+  source: z.number(),
+  homunculus: z.number(),
+  homunculus_name: z.string(),
+  unit_index: z.null(),
+  awakening_info: z.unknown(),
+});
+
+export type Mob = z.infer<typeof mobSchema>;
+
 export const MOB_ID = {
   101: "Fairy",
   10111: "Elucia",
@@ -1290,5 +1330,5 @@ export const MOB_ID = {
 
   1000214: "Homunculus - Support (Light)",
   1000215: "Homunculus - Support (Dark)",
-};
+} as const;
 export type MobId = keyof typeof MOB_ID;

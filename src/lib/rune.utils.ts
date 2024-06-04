@@ -1,5 +1,4 @@
-import { type Rune } from "../types/rune";
-import { MAX_OF_SUBSTAT } from "./rune.mapping";
+import { MAX_OF_SUBSTAT, type Rune } from "./rune.mapping";
 
 export const getRuneEfficiency = (rune: Rune) => {
   let ratio = 0.0;
@@ -12,18 +11,20 @@ export const getRuneEfficiency = (rune: Rune) => {
     | 4
     | 5;
   ratio +=
-    MAX_OF_SUBSTAT[rune.pri_eff[0]][runeClass] /
-    MAX_OF_SUBSTAT[rune.pri_eff[0]][6];
+    MAX_OF_SUBSTAT[rune.pri_eff[0] as keyof typeof MAX_OF_SUBSTAT][runeClass] /
+    MAX_OF_SUBSTAT[rune.pri_eff[0] as keyof typeof MAX_OF_SUBSTAT][6];
 
   // Sub stats
   rune.sec_eff.forEach((stat) => {
     const value = stat[3] && stat[3] > 0 ? stat[1] + stat[3] : stat[1];
-    ratio += value / MAX_OF_SUBSTAT[stat[0]][6];
+    ratio += value / MAX_OF_SUBSTAT[stat[0] as keyof typeof MAX_OF_SUBSTAT][6];
   });
 
   // Innate stat
   if (rune.prefix_eff && rune.prefix_eff[0] > 0) {
-    ratio += rune.prefix_eff[1] / MAX_OF_SUBSTAT[rune.prefix_eff[0]][6];
+    ratio +=
+      rune.prefix_eff[1] /
+      MAX_OF_SUBSTAT[rune.prefix_eff[0] as keyof typeof MAX_OF_SUBSTAT][6];
   }
 
   const efficiency = (ratio / 2.8) * 100;

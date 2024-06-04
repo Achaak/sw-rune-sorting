@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Rune, RuneFormatted } from "../types/rune";
+import type { Rune, RuneFormatted } from "../lib/rune.mapping";
 import { getRuneEfficiency } from "../lib/rune.utils";
 import { persist, createJSONStorage } from "zustand/middleware";
 

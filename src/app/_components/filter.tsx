@@ -23,7 +23,6 @@ import {
 } from "../../components/ui/multiple-selector";
 import { SETS, getSetIdByName, getSetNameById } from "../../lib/rune.mapping";
 import { useFiltersStore } from "../../store/filters";
-import { type SlotId } from "../../types/rune";
 
 const formSchema = z.object({
   sets: z.string().array(),
@@ -45,7 +44,7 @@ export const Filter: FC = () => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     updateFilters({
       sets: values.sets.map((name) => getSetIdByName(name)),
-      slots: values.slots as SlotId[],
+      slots: values.slots,
     });
   }
 
